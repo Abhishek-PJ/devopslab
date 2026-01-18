@@ -1,0 +1,87 @@
+﻿Kubernetes Dashboard & CLI for Cluster Monitoring
+
+
+ Step 1: Start Minikube with resources
+minikube start --cpus=2 --memory=4096
+
+
+
+
+ Step 2: Open Kubernetes Dashboard
+minikube dashboard
+
+
+
+
+ Step 3: Create Deployment YAML
+nano deployment.yaml
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+
+
+
+
+ Step 4: Create Service YAML
+nano service.yaml
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  selector:
+    app: nginx
+  ports:
+  - port: 80
+    targetPort: 80
+  type: NodePort
+
+
+
+
+ Step 5: Apply Deployment & Service
+kubectl apply -f deployment.yaml
+kubectl apply -f service.yaml
+
+
+
+
+ Step 6: Monitor using CLI
+kubectl get pods
+kubectl get nodes
+kubectl get svc
+kubectl logs <pod-name>
+kubectl describe pod <pod-name>
+
+
+
+
+ Step 7: Access Application
+minikube service nginx-service
+
+
+
+
+ Step 8: Cleanup
+kubectl delete deployments --all
+kubectl delete svc --all

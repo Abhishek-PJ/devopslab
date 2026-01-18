@@ -1,0 +1,60 @@
+﻿Deploy an automated build pipeline using dockerhub
+Step 1: Create GitHub Personal Access Token (PAT)
+Go to GitHub
+
+Create a token
+
+Give it permission to write packages
+
+Save it safely
+
+
+Step 2: Build the Docker image
+Run: docker build -t program-6 .
+
+
+Step 3: Tag the image (Rename for Docker Hub)
+docker tag program-6 <your-dockerhub-name>/program-6:latest
+
+
+
+
+Step 4: Push image to Docker Hub
+First login:
+docker login -u <dockerhub-username>
+
+
+Then push:
+docker push <dockerhub-username>/program-6:latest
+
+
+Step 5: Tag the image for GitHub Container Registry (GHCR)
+docker tag program-6 ghcr.io/<github-username>/program-6:latest
+
+
+Step 6: Push to GHCR
+Login using your token:
+echo $GITHUB_PAT | docker login ghcr.io -u <username> --password-stdin
+
+
+Push:
+docker push ghcr.io/<github-username>/program-6:latest
+
+
+Step 7: Connect your local project to GitHub
+If your local folder isn’t linked to GitHub yet:
+git remote add origin https://github.com/<username>/program-6.git
+
+
+This tells Git:
+“Whenever I push code → send it to this GitHub repo.”
+Step 8: Push your source code to GitHub
+git add .
+git commit -m "Initial commit"
+git push -u origin main
+Step 9: Check both registries
+* On GitHub = check Packages
+
+* On Docker Hub =check Repositories
+
+You should see: program-6:latest

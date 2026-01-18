@@ -1,0 +1,91 @@
+﻿Create Kubernetes Pod using YAML Descriptors (ConfigMap + Pod)
+
+
+ Step 1: Start Minikube
+minikube start
+
+
+ Step 2: Create Node.js file
+nano server.js
+
+
+const http = require("http");
+const port = 3000;
+
+
+http.createServer((req, res) => {
+  res.end("Hello from Node.js running inside Kubernetes!");
+}).listen(port);
+
+
+
+
+ Step 3: Create ConfigMap YAML
+nano nodejs-configmap.yaml
+
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nodejs-app-config
+data:
+  server.js: |
+    const http = require("http");
+    const port = 3000;
+    http.createServer((req, res) => {
+      res.end("Hello from Node.js running inside Kubernetes!");
+    }).listen(port);
+
+
+
+
+ Step 4: Create Pod YAML
+nano nodejs-pod.yaml
+
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: program-8
+spec:
+  containers:
+  - name: nodejs
+    image: node:18
+    command: ["node", "/usr/src/app/server.js"]
+    ports:
+    - containerPort: 3000
+    volumeMounts:
+    - name: app-code
+      mountPath: /usr/src/app
+  volumes:
+  - name: app-code
+    configMap:
+      name: nodejs-app-config
+
+
+ Step 5: Apply YAML files
+kubectl apply -f nodejs-configmap.yaml
+kubectl apply -f nodejs-pod.yaml
+
+
+
+
+ Step 6: Verify Pod
+kubectl get pods
+
+
+
+
+ Step 7: Access Application
+kubectl port-forward pod/program-8 3000:3000
+
+
+Open browser:
+http://localhost:3000
+
+
+
+
+ Step 8: Cleanup
+kubectl delete pod program-8
+kubectl delete configmap nodejs-app-config

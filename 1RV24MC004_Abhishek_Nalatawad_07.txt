@@ -1,0 +1,90 @@
+﻿Deploy a Web Application to Kubernetes using Minikube.
+
+
+STEP 1 - Start Minikube
+minikube start
+
+
+STEP 2 - Check Minikube Status
+minikube status
+
+
+You should see:
+host: Running
+kubelet: Running
+apiserver: Running
+kubeconfig: Configured
+
+
+STEP 3 - If Minikube is not running, restart it
+minikube delete
+minikube start --driver=docker
+
+
+
+
+STEP 4 - Create the Deployment file (nginx-deployment.yaml)
+Create a new file:
+nginx-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80
+
+
+
+
+STEP 5 - Apply the deployment
+kubectl apply -f nginx-deployment.yaml
+
+
+
+
+STEP 6 - Check Deployment & Pods
+kubectl get deployments
+kubectl get pods
+
+
+You should see 2 pods running.
+STEP 7 -Expose the Deployment as a Service
+kubectl expose deployment nginx-deployment \
+  --type=NodePort \
+  --port=80
+
+
+This creates a service that exposes Nginx to your system.
+STEP 8 - Check Services
+kubectl get services
+
+
+A service named nginx-deployment should appear with a NodePort.
+STEP 9 - Access the Webpage
+Minikube provides a shortcut to open the app:
+minikube service nginx-deployment
+
+
+This will open the browser showing the Nginx Welcome Page.
+
+
+STEP 10 — Clean Up (Optional)
+Delete all pods
+kubectl delete pods --all
+Delete all services
+kubectl delete svc --all
+Delete all deployments
+kubectl delete deployments --all

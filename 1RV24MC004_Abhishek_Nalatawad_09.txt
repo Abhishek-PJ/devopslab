@@ -1,0 +1,101 @@
+﻿Organize Kubernetes Pods using Labels and Namespaces
+
+
+🔹 Step 1: Create Namespace YAML
+nano namespaces.yaml
+
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dev
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: prod
+
+
+
+
+🔹 Step 2: Create Pods YAML
+nano pods.yaml
+
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: frontend-pod
+  namespace: dev
+  labels:
+    app: frontend
+spec:
+  containers:
+  - name: frontend
+    image: nginx
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: backend-pod
+  namespace: dev
+  labels:
+    app: backend
+spec:
+  containers:
+  - name: backend
+    image: nginx
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: frontend-pod
+  namespace: prod
+  labels:
+    app: frontend
+spec:
+  containers:
+  - name: frontend
+    image: nginx
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: backend-pod
+  namespace: prod
+  labels:
+    app: backend
+spec:
+  containers:
+  - name: backend
+    image: nginx
+
+
+
+
+🔹 Step 3: Apply YAML files
+kubectl apply -f namespaces.yaml
+kubectl apply -f pods.yaml
+
+
+
+
+🔹 Step 4: Verify Pods by Namespace
+kubectl get pods -n dev
+kubectl get pods -n prod
+
+
+
+
+🔹 Step 5: Filter Pods using Labels
+kubectl get pods -n dev -l app=frontend
+kubectl get pods -n prod -l app=backend
+
+
+
+
+🔹 Step 6: Cleanup
+kubectl delete pods --all -n dev
+kubectl delete pods --all -n prod
+kubectl delete namespace dev
+kubectl delete namespace prod
